@@ -1,4 +1,5 @@
-﻿using CarRace;
+﻿using System.Net;
+using CarRace;
 
 namespace CarRace
 {
@@ -73,14 +74,26 @@ namespace CarRace
                 carTask.Remove(finishedTask);
             }
         }
-
+        
+        //Varje gång ngn tråd gör en await skriver den ut en punkt?
         public static async Task Tick(int tick = 1)
         {
             await Task.Delay(TimeSpan.FromSeconds(tick));
         }
 
+        /*
+        public async static Task Wait(int delay = 1)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(delay / 10));
+            //Console.Write($".");
+        }*/
+
 
         /***********/
+        //01.46 i Egg boiler live code pratar han om race metoden
+        //40?
+
+        //Det tar 5 min dvs 300 sek för en bil att köra i mål utan penalties
 
         //Sen köra uppdateringen på bilen, sen kommer rollen
         //Så plussas 30 sek på elapsed time
@@ -97,72 +110,30 @@ namespace CarRace
         //Och då fnns penaltyn på bilen när den kör andra sträckan o då kommer
         //den med i bilden
 
+        //Startar en tråd, tar in en bil vi skapat
+        //När den är klar sen returneras en färdigkörd bil
         public async static Task<Car> Race(Car car)
         {
                 while (true)
                 {
-                    await Tick();
-                    Console.WriteLine("30 seconds of racing has occured");
-                    car.TimeToFinish = (car.DistanceLeft / (car.Velocity / 3.6)) + car.Penalty;
-                                   //= 10000 (tot sträcka) / 120 (hastighet) / 3.6 + minustiden
-                    if (car.TimeToFinish <= 30)
+                    await Tick();  // ?
+                    car.RemainingTime = (car.RemainingDistance / (car.Velocity / 3.6)) + car.Penalty;
+                //= 10000 (tot sträcka) / 120 (hastighet) / 3.6 + minustiden
+                //3.6 tror jag är 60 * 60(dvs 60 sek på 60 minuter) vilket
+                //är 3600, delat på tusen.Det har med m/ s <> km / h att göra
+                if (car.RemainingTime <= 30)
                     {
-                    //Har gått i mål?
-                        car.ElapsedTime += car.TimeToFinish;
-                        car.DistanceLeft = 0;
-                        car.TimeToFinish = 0;
+                    //Om tid kvar är mindre än 30 sek = dvs har gått i mål?
+                        car.ElapsedTime += car.RemainingTime;
+                        car.RemainingDistance = 0;
+                        car.RemainingTime = 0;
                         return car;
                     }
-
-                    //Gör en ny uträkning varje gång på hur mkt man ska ta bort 
-                    car.DistanceLeft -= (30 - car.Penalty) * (car.Velocity / 3.6);
-                    //Total distans sen minus hur länge bilen kört
-                    Events(car);
+                    car.RemainingDistance -= (30 - car.Penalty) * (car.Velocity / 3.6);
+                //Total distans sen minus hur länge bilen kört
+                //Gör en ny uträkning varje gång på hur mkt man ska ta bort 
+                Events(car);
                     car.ElapsedTime += 30;
-
-                    //60 min på en timme
-                    //120 halva min på en timme
-                    //120/120
-                    //Hinner 1 km på 30 sek
-                    /*
-                       * Uppdatera äggets temp(bilens sträcka?)
-                       * Uppdatera tiden ägget kokat
-                       * Äggets temperatur ökar med 1 grad per 10 sek
-                       */
-
-                    // 1 C per 10 sekunder
-                    // 3 C per 30 sekunder
-                    //
-
-                    // 20 C @ 0 S
-                    // 23 C @ 30 S
-                    // 26 C @ 60 S
-                    // Y = k * x + 20
-                    // 26 =  k * 60 + 20
-                    // k = 0.1
-                    // 26 - 20 = k * 60
-
-                    // 6 / 60
-
-                    //egg.egg_temperature = egg.egg_temperature + (0.1M * boilingTime);
-                    //lock (egg)
-                    //{ 
-
-                    car.distance += (0.1M * racingSpeed);
-                    car.egg_time += racingSpeed;
-
-                /*
-                 * Är ägget färdigkokt?
-                 * Är ÄT => 70C ?
-                 */
-
-                if (car.egg_temperature >= car.done_temperature)
-                {
-                    //Console.WriteLine("Egg has reached temp");
-                    // egg is done!
-                    return car;
-                }
-                //}
             }
         }
 
@@ -189,10 +160,12 @@ namespace CarRace
              }
          }*/
 
-        //Tiden är okänd
+       
 
         //Tråd som lyssnar på en readkey och tar emot det när det kommer
-        //Skriver då ut statusen för bilar o hur länge dee kört
+        //Skriver då ut statusen för bilar o hur länge dee kört eller om de gått i mål
+
+        //När time temaining är 0 för alla bilar har de gått i mål
         //Går att veta vid varje tidpunkt hur länge det är kvar
         public static async Task CarStatus(List<Car> cars)
         {
@@ -202,29 +175,33 @@ namespace CarRace
 
                 DateTime start = DateTime.Now; //Starta tidräkning från nu
 
-                bool gotKey = false;   //?
+                bool pressedKey = false;   
                
                 while ((DateTime.Now - start).TotalSeconds < 2)
                     //Om det gått mindre än 2 sek
                 {
-                    if (Console.KeyAvailable)
+                    if (Console.KeyAvailable) //blir true när man trycker på en knapp
                     {
-                        gotKey = true;   //?
+                        pressedKey = true;   
                         break;
                     }
                 }
-                if (gotKey)
+                if (pressedKey)
                 {
                     Console.ReadKey();   //Om anv trycker tangent
                     Console.Clear();
 
                     cars.ForEach(car =>  //Skriva ut status för varje bil
-                    {
-                        Console.WriteLine(car.name + " is traveling " + car.Velocity + "km/h and has "
-                                 + car.DistanceLeft + " meters left.");
+                    { 
+                            Console.WriteLine(car.name + " is traveling " + car.Velocity + "km/h and has "
+                                 + car.RemainingDistance + " meters left.");
+
+                        //Console.WriteLine(car.name + " has " + car.RemainingTime() + " seconds remaining");
+                        //Console.WriteLine(car.name + " has been traveling for {egg.egg_time} and has a temperature of {egg.egg_temperature}");
+
                     });
 
-                    gotKey = false;
+                    pressedKey = false;
                 }
 
                 /*
@@ -247,8 +224,10 @@ namespace CarRace
         {
             while (true)
             {
-                var totalRemaining = cars.Select(car => car.TimeToFinish).Sum();
-
+                //Linkq method syntax: givet en lista av objekt kör ngt på varje obj
+                //Kör TimeToFinish metod, som blir en ny lista med alla cars remaining time
+                var totalRemaining = cars.Select(car => car.RemainingTime).Sum();
+                //För att veta när alla bilar gått i mål o avsluta simuleringen
                 if (totalRemaining == 0)
                 {
                     return;

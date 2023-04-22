@@ -9,7 +9,7 @@ namespace CarRace
 
         public double Velocity { get; set; }
 
-        public double DistanceLeft { get; set; }
+        public double RemainingDistance { get; set; }
 
         //public double Distance { get; set; }
 
@@ -17,16 +17,16 @@ namespace CarRace
 
         public double Penalty { get; set; }
 
-        public double TimeToFinish { get; set; }
+        public double RemainingTime { get; set; }
 
    public Car()
         {
-            DistanceLeft = 10000;
+            RemainingDistance = 10000;
             //Distance = 0;
             Velocity = 120;
             ElapsedTime = 0;
             Penalty = 0;
-            TimeToFinish = DistanceLeft;
+            RemainingTime = RemainingDistance;
         }
     }
 }
