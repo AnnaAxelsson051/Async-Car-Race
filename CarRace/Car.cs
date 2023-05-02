@@ -7,27 +7,30 @@ namespace CarRace
 
         public string? name { get; set; }
 
-        public double Velocity { get; set; }
+        public double Speed { get; set; }
 
-        public double RemainingDistance { get; set; }
+        public double DistanceLeft { get; set; }
 
         //public double Distance { get; set; }
 
-        public double ElapsedTime { get; set; }
+        public double TimePassed { get; set; }
 
         public double Penalty { get; set; }
 
-        public double RemainingTime { get; set; }
+        public double TimeLeft { get; set; }
 
    public Car()
         {
-            RemainingDistance = 10000;
+            DistanceLeft = 10000;
             //Distance = 0;
-            Velocity = 120;
-            ElapsedTime = 0;
+            Speed = 120;
+            TimePassed = 0;
             Penalty = 0;
-            RemainingTime = RemainingDistance;
+            TimeLeft = DistanceLeft;
         }
+
+       
+
     }
 }
 
