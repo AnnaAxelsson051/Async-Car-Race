@@ -196,12 +196,12 @@ namespace CarRace
         }
         public static void Puncture(Car car)
         {
-            Console.WriteLine(car.name + " is out of gas, and is stopping for 30 sec");
+            Console.WriteLine(car.name + " is out of gas, and is stopping for 20 sec");
             car.Penalty = 20;
         }
         public static void BirdOnScreen(Car car)
         {
-            Console.WriteLine(car.name + " is out of gas, and is stopping for 30 sec");
+            Console.WriteLine(car.name + " is out of gas, and is stopping for 10 sec");
             car.Penalty = 10;
         }
         public static void EngineFailure(Car car)
