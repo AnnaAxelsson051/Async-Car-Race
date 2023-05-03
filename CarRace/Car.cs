@@ -11,8 +11,6 @@ namespace CarRace
 
         public double DistanceLeft { get; set; }
 
-        //public double Distance { get; set; }
-
         public double TimePassed { get; set; }
 
         public double Penalty { get; set; }
@@ -22,7 +20,6 @@ namespace CarRace
    public Car()
         {
             DistanceLeft = 10000;
-            //Distance = 0;
             Speed = 120;
             TimePassed = 0;
             Penalty = 0;
